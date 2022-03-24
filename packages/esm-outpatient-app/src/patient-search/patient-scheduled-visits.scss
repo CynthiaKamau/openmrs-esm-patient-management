@@ -17,22 +17,12 @@
 .visitTile {
     margin: $spacing-05;
 
-    &:global(.bx--tile--is-selected:focus) {
+    &:global(.bx--tile--is-selected) {
         background-color: $color-blue-10;
-        color: $color-blue-10;
         border: 1px solid $color-blue-60-2;
-        outline: none;
     }
 
-    &:global(.bx--tile--is-selected:hover) {
-        background-color: $color-blue-10;
-        color: $color-blue-10;
-        border: 1px solid $color-blue-60-2;
-        outline: none;
-    }
-
-
-    &:global(.bx--tile--is-selected:hover .bx--tile__checkmark svg) {
+    &:global(.bx--tile--is-selected .bx--tile__checkmark svg) {
         fill: $color-blue-60-2;
     }
 }
