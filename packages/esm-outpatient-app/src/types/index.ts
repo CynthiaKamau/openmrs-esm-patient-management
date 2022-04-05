@@ -31,3 +31,12 @@ export interface Person {
   preferredAddress: OpenmrsResource;
   uuid: string;
 }
+export interface PatientProgram {
+  uuid: string;
+  display: string;
+  patient: OpenmrsResource;
+  program: OpenmrsResource;
+  dateEnrolled: string;
+  dateCompleted: string;
+  location: OpenmrsResource;
+}

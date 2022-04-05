@@ -19,10 +19,8 @@ export const configSchema = {
   },
 };
 
-export interface ConfigObject {
-  concepts: {
-    priorityConceptSetUuid: string;
-    serviceConceptSetUuid: string;
-  };
-  contactAttributeType: Array<string>;
+export interface OutpatientConfig {
+  offlineVisitTypeUuid: string;
+  visitTypeResourceUrl: string;
+  showRecommendedVisitTypeTab: boolean;
 }

@@ -16,11 +16,22 @@ import {
   TimePickerSelect,
 } from 'carbon-components-react';
 import { useTranslation } from 'react-i18next';
-import { useLocations, useSessionUser, ExtensionSlot, useLayoutType, useVisitTypes } from '@openmrs/esm-framework';
+import {
+  useLocations,
+  useSessionUser,
+  ExtensionSlot,
+  useLayoutType,
+  useConfig,
+  useVisitTypes,
+  useVisit,
+} from '@openmrs/esm-framework';
 import BaseVisitType from './base-visit-type.component';
+import { MemoizedRecommendedVisitType } from './recommended-visit-type.component';
 import styles from './visit-form.scss';
-import { SearchTypes } from '../../types';
+import { SearchTypes, PatientProgram } from '../../types';
+import { useActivePatientEnrollment } from '../programs/usePatientProgramEnrollment';
 import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
+import { OutpatientConfig } from '../../config-schema';
 
 interface VisitFormProps {
   toggleSearchType: (searchMode: SearchTypes) => void;
@@ -42,7 +53,11 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
   const [visitType, setVisitType] = useState<string | null>(null);
   const state = useMemo(() => ({ patientUuid }), [patientUuid]);
   const allVisitTypes = useVisitTypes();
-  const [isloading, isLoading] = useState(false);
+  const config = useConfig() as OutpatientConfig;
+  // const { mutate } = useVisit(patientUuid);
+  const { activePatientEnrollment, isLoading } = useActivePatientEnrollment(patientUuid);
+  const [enrollment, setEnrollment] = useState<PatientProgram>(activePatientEnrollment[0]);
+
   // const { mutate } = useVisit(patientUuid);
 
   useEffect(() => {
@@ -138,7 +153,17 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
               <Switch name="recommended" text={t('recommended', 'Recommended')} />
               <Switch name="all" text={t('all', 'All')} />
             </ContentSwitcher>
-            {contentSwitcherIndex === 0 && !isLoading && <p> </p>}
+            {contentSwitcherIndex === 0 && !isLoading && (
+              <MemoizedRecommendedVisitType
+                onChange={(visitType) => {
+                  setVisitType(visitType);
+                  setIsMissingVisitType(false);
+                }}
+                patientUuid={patientUuid}
+                patientProgramEnrollment={enrollment}
+                locationUuid={selectedLocation}
+              />
+            )}
             {contentSwitcherIndex === 1 && (
               <BaseVisitType
                 onChange={(visitType) => {
