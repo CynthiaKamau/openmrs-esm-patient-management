@@ -1,7 +1,7 @@
 import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { configSchema } from './config-schema';
 import { createDashboardLink } from './createDashboardLink';
-import { clinicalAppointmentsDashboardMeta } from './dashboard.meta';
+import { homeDashboardMeta } from './dashboard.meta';
 
 const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
@@ -30,48 +30,31 @@ function setupOpenMRS() {
     ],
     extensions: [
       {
-        name: 'appointments-link',
+        id: 'appointments-link',
         slot: 'app-menu-slot',
         load: getAsyncLifecycle(() => import('./appointment-link'), options),
         online: true,
         offline: false,
       },
       {
-        name: 'appointments-side-nav',
+        id: 'appointments-side-nav-ext',
         slot: 'appointments-sidebar-slot',
         load: getAsyncLifecycle(() => import('./side-menu/side-menu.component'), options),
         online: true,
         offline: true,
       },
       {
-        name: 'clinical-appointments-db-link',
+        id: 'home-db-link',
         slot: 'appointments-dashboard-slot',
-        load: getSyncLifecycle(createDashboardLink(clinicalAppointmentsDashboardMeta), options),
-        meta: clinicalAppointmentsDashboardMeta,
+        load: getSyncLifecycle(createDashboardLink(homeDashboardMeta), options),
+        meta: homeDashboardMeta,
         online: true,
         offline: true,
       },
       {
-        name: 'clinical-appointments-dashboard',
-        slot: 'clinical-appointments-dashboard-slot',
-        load: getAsyncLifecycle(() => import('./clinical-appointments.component'), options),
-        online: true,
-        offline: true,
-      },
-      {
-        name: 'patient-list-action-menu',
-        slot: 'action-menu-items-slot',
-        load: getAsyncLifecycle(() => import('./patient-list-action-button.component'), {
-          featureName: 'patient-list-action-menu-item',
-          moduleName,
-        }),
-      },
-      {
-        name: 'patient-table',
-        load: getAsyncLifecycle(() => import('./patient-table/patient-table.component'), {
-          featureName: 'patient-table',
-          moduleName,
-        }),
+        id: 'home-dashboard',
+        slot: 'home-dashboard-slot',
+        load: getAsyncLifecycle(() => import('./home.component'), options),
         online: true,
         offline: true,
       },

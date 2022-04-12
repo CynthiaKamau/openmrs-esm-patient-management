@@ -1,11 +1,15 @@
+<<<<<<< HEAD
 import { OpenmrsResource } from '@openmrs/esm-framework';
 
+=======
+>>>>>>> 7f79693 (Mombasa hackathon appointments esm setup (#163))
 export enum SearchTypes {
   BASIC = 'basic',
   ADVANCED = 'advanced',
   SEARCH_RESULTS = 'search_results',
   SCHEDULED_VISITS = 'scheduled-visits',
 }
+<<<<<<< HEAD
 
 interface ObsData {
   concept: {
@@ -93,3 +97,5 @@ export interface Observation {
   value: any;
   obsDatetime: string;
 }
+=======
+>>>>>>> 7f79693 (Mombasa hackathon appointments esm setup (#163))

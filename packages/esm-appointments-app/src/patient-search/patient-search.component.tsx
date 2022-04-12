@@ -21,7 +21,11 @@ const PatientSearch: React.FC<PatientSearchProps> = ({ closePanel }) => {
 
   return (
     <>
+<<<<<<< HEAD
       <Overlay header={t('addNewAppointment', 'Add new Appointment')} closePanel={closePanel}>
+=======
+      <Overlay header={t('addPatientToList', 'Add patient to list')} closePanel={closePanel}>
+>>>>>>> 7f79693 (Mombasa hackathon appointments esm setup (#163))
         <div className="omrs-main-content">
           {searchType === SearchTypes.BASIC ? (
             <BasicSearch toggleSearchType={toggleSearchType} />
