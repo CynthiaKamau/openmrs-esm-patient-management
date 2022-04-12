@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -24,14 +24,19 @@ interface PatientSearchProps {
 }
 
 enum fieldMatcherRange {
-  ANY = 'any',
-  ALL = 'all',
+  COMPACT = 'compact',
+  LARGE = 'large',
 }
 
 enum genders {
   ANY = 'any',
   MALE = 'male',
   FEMALE = 'female',
+}
+
+enum size {
+  COMPACT = 'sm',
+  LARGE = 'lg',
 }
 
 const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
@@ -46,6 +51,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
   const [postCode, setPostCode] = useState('');
   const [lastVisitDate, setLastVisitDate] = useState('');
   const [fieldMatcherRangeSwitcherValue, setFieldMatcherRangeSwitcherValue] = useState(0);
+  const [formSize, setFormSize] = useState<size>(size.COMPACT);
   const [genderSwitcherValue, setGenderSwitcherValue] = useState(0);
   const [searchParams, setSearchParams] = useState([]);
   const [open, setOpen] = useState(false);
@@ -53,6 +59,14 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
   const handleSearch = () => {
     setSearchParams([firstName, middleName, lastName, gender, dateOfBirth, phoneNumber, postCode, lastVisitDate]);
   };
+
+  useEffect(() => {
+    if (fieldMatcherRangeSwitcherValue === 0) {
+      setFormSize(size.COMPACT);
+    } else if (fieldMatcherRangeSwitcherValue === 1) {
+      setFormSize(size.LARGE);
+    }
+  }, [fieldMatcherRangeSwitcherValue]);
 
   return (
     <Form onSubmit={handleSearch}>
@@ -62,7 +76,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
             kind="ghost"
             renderIcon={ArrowLeft24}
             iconDescription="Back to simple search"
-            size="sm"
+            size={formSize}
             onClick={() => toggleSearchType(SearchTypes.BASIC)}>
             <span>{t('backToSimpleSearch', 'Back to simple search')}</span>
           </Button>
@@ -72,11 +86,11 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
             <div className={styles.contentSwitcherContainer}>
               <span>{t('match', 'Match')}</span>
               <ContentSwitcher
-                size="sm"
+                size={formSize}
                 className={styles.fieldRangeSwitcher}
                 onChange={({ index }) => setFieldMatcherRangeSwitcherValue(index)}>
-                <Switch name={fieldMatcherRange.ANY} text={t('any', 'Any')} />
-                <Switch name={fieldMatcherRange.ALL} text={t('all', 'All')} />
+                <Switch name={fieldMatcherRange.COMPACT} text={t('compact', 'Compact')} />
+                <Switch name={fieldMatcherRange.LARGE} text={t('large', 'Large')} />
               </ContentSwitcher>
               <span>{t('fields', 'of the following fields')}:</span>
             </div>
@@ -92,6 +106,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
               labelText={t('firstName', 'First name')}
               onChange={(event) => setFirstName(event.target.value)}
               value={firstName}
+              size={formSize}
             />
             <TextInput
               className={styles.input}
@@ -100,6 +115,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
               labelText={t('middleName', 'Middle name')}
               onChange={(event) => setMiddleName(event.target.value)}
               value={middleName}
+              size={formSize}
             />
             <TextInput
               className={styles.input}
@@ -108,6 +124,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
               labelText={t('lastName', 'Last name')}
               onChange={(event) => setLastName(event.target.value)}
               value={lastName}
+              size={formSize}
             />
           </Column>
         </Row>
@@ -117,7 +134,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
             <h3 className={styles.heading}>{t('personalDetails', 'Personal details')}</h3>
             <FormGroup legendText={t('sex', 'Sex')}>
               <ContentSwitcher
-                size="sm"
+                size={formSize}
                 className={styles.genderSwitcher}
                 onChange={({ index }) => setGenderSwitcherValue(index)}>
                 <Switch name={genders.ANY} text={t('any', 'Any')} />
@@ -132,6 +149,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
                 labelText={t('dateOfBirth', 'Date of birth')}
                 onChange={(event) => setDateOfBirth(event.target.value)}
                 type="date"
+                size={formSize}
               />
             </DatePicker>
             <TextInput
@@ -141,6 +159,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
               labelText={t('phoneNumber', 'Phone number')}
               onChange={(event) => setPhoneNumber(event.target.value)}
               value={phoneNumber}
+              size={formSize}
             />
             <TextInput
               className={styles.input}
@@ -149,6 +168,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
               labelText={t('postCode', 'Post code')}
               onChange={(event) => setPostCode(event.target.value)}
               value={postCode}
+              size={formSize}
             />
           </Column>
         </Row>
@@ -164,6 +184,7 @@ const AdvancedSearch: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
                 onChange={(event) => setLastVisitDate(event.target.value)}
                 type="date"
                 width={'120px'}
+                size={formSize}
               />
             </DatePicker>
           </Column>
