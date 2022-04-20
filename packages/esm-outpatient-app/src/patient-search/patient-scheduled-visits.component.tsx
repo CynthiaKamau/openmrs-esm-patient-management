@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, ButtonSet, Switch, ContentSwitcher, RadioTile, TileGroup } from 'carbon-components-react';
 import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
 import { formatDatetime, useLayoutType, parseDate } from '@openmrs/esm-framework';
-import { SearchTypes } from '../types';
+import { SearchResultTypes } from '../types';
 import styles from './patient-scheduled-visits.scss';
 
 interface PatientSearchProps {
-  toggleSearchType: (searchMode: SearchTypes) => void;
+  toggleSearchResultType: (searchMode: SearchResultTypes) => void;
 }
 
 enum priority {
@@ -16,7 +16,7 @@ enum priority {
   EMERGENCY = 'Emergency',
 }
 
-const PatientScheduledVisits: React.FC<PatientSearchProps> = ({ toggleSearchType }) => {
+const PatientScheduledVisits: React.FC<PatientSearchProps> = ({ toggleSearchResultType }) => {
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
   const [showRecentPriority, setShowRecentPriority] = useState(false);
@@ -65,7 +65,7 @@ const PatientScheduledVisits: React.FC<PatientSearchProps> = ({ toggleSearchType
           renderIcon={ArrowLeft24}
           iconDescription="Back to search results"
           size="sm"
-          onClick={() => toggleSearchType(SearchTypes.BASIC)}>
+          onClick={() => toggleSearchResultType(SearchResultTypes.SEARCH_RESULTS)}>
           <span>{t('backToSearchResults', 'Back to search results')}</span>
         </Button>
       </div>
@@ -174,7 +174,10 @@ const PatientScheduledVisits: React.FC<PatientSearchProps> = ({ toggleSearchType
       </div>
 
       <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-        <Button className={styles.button} kind="secondary" onClick={() => toggleSearchType(SearchTypes.BASIC)}>
+        <Button
+          className={styles.button}
+          kind="secondary"
+          onClick={() => toggleSearchResultType(SearchResultTypes.SEARCH_RESULTS)}>
           {t('cancel', 'Cancel')}
         </Button>
         <Button className={styles.button} kind="primary" type="submit">

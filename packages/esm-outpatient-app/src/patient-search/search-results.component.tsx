@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styles from './search-results.scss';
-import { SearchTypes } from '../types';
+import { SearchResultTypes } from '../types';
 import PatientInfo from '../patient-info/patient-info.component';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from 'carbon-components-react';
@@ -8,12 +8,12 @@ import { Dropdown } from 'carbon-components-react';
 interface SearchResultsProps {
   patients: Array<any>;
   hidePanel?: any;
-  toggleSearchType: (searchMode: SearchTypes) => void;
+  toggleSearchResultType: (searchMode: SearchResultTypes) => void;
 }
 
 type SortCriteria = 'firstNameFirst' | 'lastNameFirst' | 'oldest' | 'youngest';
 
-const SearchResults: React.FC<SearchResultsProps> = ({ patients, toggleSearchType }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({ patients, toggleSearchResultType }) => {
   const { t } = useTranslation();
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>('firstNameFirst');
   const fhirPatients = useMemo(() => {

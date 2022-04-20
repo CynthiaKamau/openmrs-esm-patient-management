@@ -6,15 +6,16 @@ import Search16 from '@carbon/icons-react/es/search/16';
 import SearchIllustration from './search-illustration.component';
 import SearchResults from './search-results.component';
 import { findPatients } from './search.resource';
-import { SearchTypes } from '../types';
+import { SearchTypes, SearchResultTypes } from '../types';
 import styles from './basic-search.scss';
 import EmptyDataIllustration from './empty-data-illustration.component';
 
 interface BasicSearchProps {
   toggleSearchType: (searchMode: SearchTypes) => void;
+  toggleSearchResultType: (searchMode: SearchResultTypes) => void;
 }
 
-const BasicSearch: React.FC<BasicSearchProps> = ({ toggleSearchType }) => {
+const BasicSearch: React.FC<BasicSearchProps> = ({ toggleSearchType, toggleSearchResultType }) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any>(null);
@@ -72,7 +73,7 @@ const BasicSearch: React.FC<BasicSearchProps> = ({ toggleSearchType }) => {
               <InlineLoading description={t('loading', 'Loading...')} />
             </div>
           ) : searchTerm.length > 0 && searchResults.length > 0 ? (
-            <SearchResults toggleSearchType={toggleSearchType} patients={searchResults} />
+            <SearchResults toggleSearchResultType={toggleSearchResultType} patients={searchResults} />
           ) : (
             <div>
               <p className={styles.resultsText}>{t('noResultsFound', 'No results found')}</p>
