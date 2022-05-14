@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import {
   Button,
@@ -7,7 +7,10 @@ import {
   DatePicker,
   DatePickerInput,
   Form,
+  FormGroup,
   InlineNotification,
+  RadioButton,
+  RadioButtonGroup,
   Row,
   Select,
   SelectItem,
@@ -16,39 +19,54 @@ import {
   TimePickerSelect,
 } from 'carbon-components-react';
 import { useTranslation } from 'react-i18next';
+import { first } from 'rxjs/operators';
 import {
+  saveVisit,
+  showNotification,
+  showToast,
   useLocations,
   useSession,
   ExtensionSlot,
+  NewVisitPayload,
+  toOmrsIsoString,
+  toDateObjectStrict,
   useLayoutType,
-  useConfig,
   useVisitTypes,
-  useVisit,
+  useConfig,
 } from '@openmrs/esm-framework';
+import BaseVisitType from './base-visit-type.component';
+import { SearchTypes, PatientProgram } from '../../types';
 import styles from './visit-form.scss';
-import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
-import { SearchTypes } from '../../types/index';
-
+import { useActivePatientEnrollment } from '../programs/usePatientProgramEnrollment';
+import { MemoizedRecommendedVisitType } from './recommended-visit-type.component';
+import { OutpatientConfig } from '../../config-schema';
+import { convertTime12to24, amPm } from '../helpers/time-helpers';
+import { useHistory } from 'react-router-dom';
 interface VisitFormProps {
   toggleSearchType: (searchMode: SearchTypes) => void;
   patientUuid: string;
 }
 
-const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchType }) => {
+const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUuid }) => {
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
   const locations = useLocations();
   const sessionUser = useSession();
-  const [contentSwitcherIndex, setContentSwitcherIndex] = useState(0);
+  const config = useConfig() as OutpatientConfig;
+  const [contentSwitcherIndex, setContentSwitcherIndex] = useState(config.showRecommendedVisitTypeTab ? 0 : 1);
   const [isMissingVisitType, setIsMissingVisitType] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [timeFormat, setTimeFormat] = useState(new Date().getHours() >= 12 ? 'PM' : 'AM');
+  const [timeFormat, setTimeFormat] = useState<amPm>(new Date().getHours() >= 12 ? 'PM' : 'AM');
   const [visitDate, setVisitDate] = useState(new Date());
   const [visitTime, setVisitTime] = useState(dayjs(new Date()).format('hh:mm'));
   const [visitType, setVisitType] = useState<string | null>(null);
   const state = useMemo(() => ({ patientUuid }), [patientUuid]);
   const allVisitTypes = useVisitTypes();
+  const { activePatientEnrollment, isLoading } = useActivePatientEnrollment(patientUuid);
+  const [enrollment, setEnrollment] = useState<PatientProgram>(activePatientEnrollment[0]);
+  const [ignoreChanges, setIgnoreChanges] = useState(true);
+  const history = useHistory();
 
   useEffect(() => {
     if (locations && sessionUser?.sessionLocation?.uuid) {
@@ -56,8 +74,63 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
     }
   }, [locations, sessionUser]);
 
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      if (!visitType) {
+        setIsMissingVisitType(true);
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const [hours, minutes] = convertTime12to24(visitTime, timeFormat);
+
+      const payload: NewVisitPayload = {
+        patient: patientUuid,
+        startDatetime: toDateObjectStrict(
+          toOmrsIsoString(
+            new Date(dayjs(visitDate).year(), dayjs(visitDate).month(), dayjs(visitDate).date(), hours, minutes),
+          ),
+        ),
+        visitType: visitType,
+        location: selectedLocation,
+      };
+
+      const abortController = new AbortController();
+      saveVisit(payload, abortController)
+        .pipe(first())
+        .subscribe(
+          (response) => {
+            if (response.status === 201) {
+              showToast({
+                kind: 'success',
+                description: t('startVisitSuccessfully', 'Visit started successfully'),
+              });
+              toggleSearchType(null);
+              history.push(`\${openmrsSpaBase}/home`);
+            }
+          },
+          (error) => {
+            showNotification({
+              title: t('startVisitError', 'Error starting visit'),
+              kind: 'error',
+              critical: true,
+              description: error?.message,
+            });
+          },
+        );
+    },
+    [patientUuid, selectedLocation, t, timeFormat, visitDate, visitTime, visitType],
+  );
+
+  const handleOnChange = () => {
+    setIgnoreChanges((prevState) => !prevState);
+  };
+
   return (
-    <Form className={styles.form}>
+    <Form className={styles.form} onChange={handleOnChange}>
       <div>
         {isTablet && (
           <Row className={styles.headerGridRow}>
@@ -65,17 +138,7 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
           </Row>
         )}
         <div className={styles.container}>
-          <div className={styles.backButton}>
-            <Button
-              kind="ghost"
-              renderIcon={ArrowLeft24}
-              iconDescription="Back to scheduled visits"
-              size="sm"
-              onClick={() => toggleSearchType(SearchTypes.BASIC)}>
-              <span>{t('backToScheduledVisits', 'Back to scheduled visits')}</span>
-            </Button>
-          </div>
-          <section className={styles.section}>
+          <section>
             <div className={styles.sectionTitle}>{t('dateAndTimeOfVisit', 'Date and time of visit')}</div>
             <div className={styles.dateTimeSection}>
               <DatePicker
@@ -104,7 +167,7 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
                 value={visitTime}>
                 <TimePickerSelect
                   id="visitStartTimeSelect"
-                  onChange={(event) => setTimeFormat(event.target.value)}
+                  onChange={(event) => setTimeFormat(event.target.value as amPm)}
                   value={timeFormat}
                   labelText={t('time', 'Time')}
                   aria-label={t('time', 'Time')}>
@@ -115,7 +178,7 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
             </div>
           </section>
 
-          <section className={styles.section}>
+          <section>
             <div className={styles.sectionTitle}>{t('visitLocation', 'Visit Location')}</div>
             <Select
               labelText={t('selectLocation', 'Select a location')}
@@ -133,7 +196,32 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
             </Select>
           </section>
 
-          <section className={styles.section}>
+          {config.showRecommendedVisitTypeTab && (
+            <section>
+              <div className={styles.sectionTitle}>{t('program', 'Program')}</div>
+              <FormGroup legendText={t('selectProgramType', 'Select program type')}>
+                <RadioButtonGroup
+                  defaultSelected={enrollment?.program?.uuid}
+                  orientation="vertical"
+                  onChange={(uuid) =>
+                    setEnrollment(activePatientEnrollment.find(({ program }) => program.uuid === uuid))
+                  }
+                  name="program-type-radio-group"
+                  valueSelected="default-selected">
+                  {activePatientEnrollment.map(({ uuid, display, program }) => (
+                    <RadioButton
+                      key={uuid}
+                      className={styles.radioButton}
+                      id={uuid}
+                      labelText={display}
+                      value={program.uuid}
+                    />
+                  ))}
+                </RadioButtonGroup>
+              </FormGroup>
+            </section>
+          )}
+          <section>
             <div className={styles.sectionTitle}>{t('visitType', 'Visit Type')}</div>
             <ContentSwitcher
               selectedIndex={contentSwitcherIndex}
@@ -143,9 +231,30 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
               <Switch name="recommended" text={t('recommended', 'Recommended')} />
               <Switch name="all" text={t('all', 'All')} />
             </ContentSwitcher>
+            {contentSwitcherIndex === 0 && !isLoading && (
+              <MemoizedRecommendedVisitType
+                onChange={(visitType) => {
+                  setVisitType(visitType);
+                  setIsMissingVisitType(false);
+                }}
+                patientUuid={patientUuid}
+                patientProgramEnrollment={enrollment}
+                locationUuid={selectedLocation}
+              />
+            )}
+            {contentSwitcherIndex === 1 && (
+              <BaseVisitType
+                onChange={(visitType) => {
+                  setVisitType(visitType);
+                  setIsMissingVisitType(false);
+                }}
+                visitTypes={allVisitTypes}
+                patientUuid={patientUuid}
+              />
+            )}
           </section>
           {isMissingVisitType && (
-            <section className={styles.section}>
+            <section>
               <InlineNotification
                 style={{ margin: '0', minWidth: '100%' }}
                 kind="error"
@@ -158,10 +267,15 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
         </div>
       </div>
       <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-        <Button className={styles.button} kind="secondary" onClick={() => toggleSearchType(SearchTypes.BASIC)}>
+        <Button
+          className={styles.button}
+          kind="secondary"
+          onClick={() => {
+            toggleSearchType(SearchTypes.BASIC);
+          }}>
           {t('discard', 'Discard')}
         </Button>
-        <Button className={styles.button} disabled={isSubmitting} kind="primary" type="submit">
+        <Button onClick={handleSubmit} className={styles.button} disabled={isSubmitting} kind="primary" type="submit">
           {t('startVisit', 'Start visit')}
         </Button>
       </ButtonSet>

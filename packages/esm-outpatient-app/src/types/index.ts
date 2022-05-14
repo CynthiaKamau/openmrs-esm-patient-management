@@ -73,3 +73,12 @@ export interface AppointmentService {
   uuid: string;
   serviceTypes: Array<ServiceTypes>;
 }
+export interface PatientProgram {
+  uuid: string;
+  display: string;
+  patient: OpenmrsResource;
+  program: OpenmrsResource;
+  dateEnrolled: string;
+  dateCompleted: string;
+  location: OpenmrsResource;
+}
