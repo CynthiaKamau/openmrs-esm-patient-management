@@ -33,6 +33,7 @@ import {
   useLayoutType,
   useVisitTypes,
   useConfig,
+  navigate,
 } from '@openmrs/esm-framework';
 import BaseVisitType from './base-visit-type.component';
 import { SearchTypes, PatientProgram } from '../../types';
@@ -41,7 +42,6 @@ import { useActivePatientEnrollment } from '../programs/usePatientProgramEnrollm
 import { MemoizedRecommendedVisitType } from './recommended-visit-type.component';
 import { OutpatientConfig } from '../../config-schema';
 import { convertTime12to24, amPm } from '../helpers/time-helpers';
-import { useHistory } from 'react-router-dom';
 interface VisitFormProps {
   toggleSearchType: (searchMode: SearchTypes) => void;
   patientUuid: string;
@@ -66,7 +66,6 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUui
   const { activePatientEnrollment, isLoading } = useActivePatientEnrollment(patientUuid);
   const [enrollment, setEnrollment] = useState<PatientProgram>(activePatientEnrollment[0]);
   const [ignoreChanges, setIgnoreChanges] = useState(true);
-  const history = useHistory();
 
   useEffect(() => {
     if (locations && sessionUser?.sessionLocation?.uuid) {
@@ -106,10 +105,14 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUui
             if (response.status === 201) {
               showToast({
                 kind: 'success',
-                description: t('startVisitSuccessfully', 'Visit started successfully'),
+                description: t(
+                  'startVisitSuccessfully',
+                  'Visit started successfully. Patient has been added to active visits list.',
+                  `${hours} : ${minutes}`,
+                ),
               });
-              toggleSearchType(null);
-              history.push(`\${openmrsSpaBase}/home`);
+              // toggleSearchType(null);
+              navigate({ to: `\${openmrsSpaBase}/home` });
             }
           },
           (error) => {
