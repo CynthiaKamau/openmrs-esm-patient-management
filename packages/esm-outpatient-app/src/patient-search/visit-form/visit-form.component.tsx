@@ -42,6 +42,8 @@ import { useActivePatientEnrollment } from '../programs/usePatientProgramEnrollm
 import { MemoizedRecommendedVisitType } from './recommended-visit-type.component';
 import { OutpatientConfig } from '../../config-schema';
 import { convertTime12to24, amPm } from '../helpers/time-helpers';
+import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
+
 interface VisitFormProps {
   toggleSearchType: (searchMode: SearchTypes) => void;
   patientUuid: string;
@@ -140,6 +142,15 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUui
             <ExtensionSlot extensionSlotName="visit-form-header-slot" className={styles.dataGridRow} state={state} />
           </Row>
         )}
+        <Button
+          kind="ghost"
+          renderIcon={ArrowLeft24}
+          iconDescription="Back to scheduled visits"
+          size="sm"
+          onClick={() => toggleSearchType(SearchTypes.SCHEDULED_VISITS)}>
+          <span>{t('backToScheduledVisits', 'Back to scheduled visits')}</span>
+        </Button>
+
         <div className={styles.container}>
           <section>
             <div className={styles.sectionTitle}>{t('dateAndTimeOfVisit', 'Date and time of visit')}</div>

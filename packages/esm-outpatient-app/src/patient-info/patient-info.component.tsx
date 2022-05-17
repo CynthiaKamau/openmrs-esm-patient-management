@@ -32,6 +32,11 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ patient, handlePatientInfoCli
     return t('unknown', 'Unknown');
   };
 
+  const toggleShowMore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowContactDetails((prevState) => !prevState);
+  };
+
   return (
     <ClickableTile className={styles.container} onClick={handlePatientInfoClick}>
       <div className={`${showContactDetails ? styles.activePatientInfoContainer : styles.patientInfoContainer}`}>
@@ -61,7 +66,7 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ patient, handlePatientInfoCli
               kind="ghost"
               renderIcon={showContactDetails ? ChevronUp16 : ChevronDown16}
               iconDescription="Toggle contact details"
-              onClick={() => setShowContactDetails((prevState) => !prevState)}>
+              onClick={(e) => toggleShowMore(e)}>
               {showContactDetails ? t('showLess', 'Show less') : t('showAllDetails', 'Show all details')}
             </Button>
           </div>
