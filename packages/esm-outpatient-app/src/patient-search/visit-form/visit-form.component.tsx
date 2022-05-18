@@ -45,7 +45,7 @@ import { convertTime12to24, amPm } from '../helpers/time-helpers';
 import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
 
 interface VisitFormProps {
-  toggleSearchType: (searchMode: SearchTypes) => void;
+  toggleSearchType: (searchMode: SearchTypes, patientUuid) => void;
   patientUuid: string;
 }
 
@@ -142,14 +142,17 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUui
             <ExtensionSlot extensionSlotName="visit-form-header-slot" className={styles.dataGridRow} state={state} />
           </Row>
         )}
-        <Button
-          kind="ghost"
-          renderIcon={ArrowLeft24}
-          iconDescription="Back to scheduled visits"
-          size="sm"
-          onClick={() => toggleSearchType(SearchTypes.SCHEDULED_VISITS)}>
-          <span>{t('backToScheduledVisits', 'Back to scheduled visits')}</span>
-        </Button>
+
+        <div className={styles.backButton}>
+          <Button
+            kind="ghost"
+            renderIcon={ArrowLeft24}
+            iconDescription="Back to scheduled visits"
+            size="sm"
+            onClick={() => toggleSearchType(SearchTypes.SCHEDULED_VISITS, patientUuid)}>
+            <span>{t('backToScheduledVisits', 'Back to scheduled visits')}</span>
+          </Button>
+        </div>
 
         <div className={styles.container}>
           <section>
@@ -285,7 +288,7 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ toggleSearchType, patientUui
           className={styles.button}
           kind="secondary"
           onClick={() => {
-            toggleSearchType(SearchTypes.BASIC);
+            toggleSearchType(SearchTypes.BASIC, patientUuid);
           }}>
           {t('discard', 'Discard')}
         </Button>

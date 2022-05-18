@@ -106,5 +106,6 @@
   "vitals": "Vitals",
   "waitingFor": "Waiting for:",
   "waitTime": "Wait time (mins)",
-  "youngest": "Youngest first"
+  "youngest": "Youngest first",
+  "futureScheduledVisits": "{count, plural, one{{count} visit} other{{count} visits}} scheduled for dates in the future"
 }
