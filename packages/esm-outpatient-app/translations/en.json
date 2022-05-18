@@ -7,6 +7,7 @@
   "anotherVisitType": "Start another visit type",
   "any": "Any",
   "averageWaitTime": "Average wait time today",
+  "backToScheduledVisits": "Back to scheduled visits",
   "backToSearchResults": "Back to search results",
   "backToSimpleSearch": "Back to simple search",
   "cancel": "Cancel",
@@ -72,10 +73,8 @@
   "priority": "Priority",
   "program": "Program",
   "provider": "Provider",
-  "returnDate": "Return date",
-  "recentScheduledVisits": "{count, plural, one{{count} visit} other{{count} visits}} scheduled for +/- 7 days",
-  "recentScheduledVisits_plural": "",
   "recommended": "Recommended",
+  "returnDate": "Return date",
   "scheduledAppointments": "Scheduled appts. today",
   "search": "Search",
   "searchboxPlaceholder": "Search for a patient name or ID number",
@@ -106,6 +105,5 @@
   "vitals": "Vitals",
   "waitingFor": "Waiting for:",
   "waitTime": "Wait time (mins)",
-  "youngest": "Youngest first",
-  "futureScheduledVisits": "{count, plural, one{{count} visit} other{{count} visits}} scheduled for dates in the future"
+  "youngest": "Youngest first"
 }
