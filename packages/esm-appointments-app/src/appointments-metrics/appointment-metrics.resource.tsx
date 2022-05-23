@@ -1,17 +1,24 @@
 import useSWR from 'swr';
-import { openmrsFetch } from '@openmrs/esm-framework';
+import useSWRImmutable from 'swr/immutable';
+import { FetchResponse, openmrsFetch } from '@openmrs/esm-framework';
 
-// TO DO
-// Replace this mock response with actual data
-// Replace isLoading with actual loading status from swr
-export function useAppointmentsMetrics() {
-  const metrics = { scheduleAppointments: 100, missedAppointments: 28, providersAvailableToday: 182 };
-  const url = ``;
-  const { data, error } = useSWR<{ data: { results: {} } }, Error>(url, openmrsFetch);
+export function useMetrics() {
+  const metrics = { scheduled_appointments: 100, missed_appointments: 28, providers_available_today: 182 };
+  const { data, error } = useSWR<{ data: { results: {} } }, Error>(`/ws/rest/v1/queue?`, openmrsFetch);
 
   return {
     metrics: metrics,
     isError: error,
-    isLoading: false, //!data && !error,
+    isLoading: !data && !error,
+  };
+}
+
+export function useServices() {
+  const serviceConceptSetUuid = '330c0ec6-0ac7-4b86-9c70-29d76f0ae20a';
+  const apiUrl = `/ws/rest/v1/concept/${serviceConceptSetUuid}`;
+  const { data } = useSWRImmutable<FetchResponse>(apiUrl, openmrsFetch);
+
+  return {
+    services: data ? data?.data?.setMembers?.map((setMember) => setMember?.display) : [],
   };
 }
