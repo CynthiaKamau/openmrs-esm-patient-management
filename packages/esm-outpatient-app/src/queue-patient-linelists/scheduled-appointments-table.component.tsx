@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, MouseEvent, AnchorHTMLAttributes } from 'react';
+import React, { useMemo, useCallback, MouseEvent, AnchorHTMLAttributes, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
@@ -36,6 +36,8 @@ import styles from './scheduled-appointments-table.scss';
 import OverflowMenuVertical16 from '@carbon/icons-react/es/overflow-menu--vertical/16';
 import { mockAppointmentsData } from '../../__mocks__/appointments.mock';
 import { Close16, Filter16 } from '@carbon/icons-react';
+import { filterType } from '../types/index';
+import QueueLinelist from './queue-linelist.component';
 
 const currentPathName: string = window.location.pathname;
 const fromPage: string = getOriginFromPathName(currentPathName);
@@ -120,6 +122,7 @@ const AppointmentsTable: React.FC<ScheduledAppointmentsTableProps> = () => {
   const { t } = useTranslation();
   const { appointmentQueueEntries, isLoading } = useAppointments();
   const isDesktop = useLayoutType() === 'desktop';
+  const [showFilter, setShowFilter] = useState(false);
   const { results: paginatedAppointments, currentPage, goTo } = usePagination(mockAppointmentsData.data, pageSize);
 
   const tableHeaders = useMemo(
@@ -233,7 +236,7 @@ const AppointmentsTable: React.FC<ScheduledAppointmentsTableProps> = () => {
         </Tag>
 
         <div className={styles.actionsBtn}>
-          <Button renderIcon={Filter16} kind="ghost">
+          <Button renderIcon={Filter16} kind="ghost" onClick={() => setShowFilter(true)}>
             {t('filter', 'Filter (1)')}
           </Button>
         </div>
@@ -305,6 +308,8 @@ const AppointmentsTable: React.FC<ScheduledAppointmentsTableProps> = () => {
           <p className={styles.content}>{t('noPatientsToDisplay', 'No patients to display')}</p>
         </Tile>
       )}
+
+      {showFilter && <QueueLinelist closePanel={() => setShowFilter(false)} />}
     </div>
   );
 };
