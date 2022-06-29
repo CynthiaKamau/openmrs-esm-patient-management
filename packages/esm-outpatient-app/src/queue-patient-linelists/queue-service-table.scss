@@ -1,0 +1,34 @@
+@import '~@openmrs/esm-styleguide/src/vars';
+@import '~carbon-components/src/globals/scss/vars';
+@import '~carbon-components/src/globals/scss/mixins';
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 0.5rem;
+  }
+}
+.tooltip :global(.bx--tooltip__trigger.bx--tooltip__trigger--definition) {
+  border-bottom: none;
+}
+
+.tag {
+  margin: 0.25rem 0;
+}
+
+.priorityTag {
+  @extend .tag;
+  @include carbon--type-style('label-01');
+  color: #943d00;
+  background-color: #ffc9a3;
+}
+.statusContainer {
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 0.5rem;
+  }
+}
