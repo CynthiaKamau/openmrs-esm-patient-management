@@ -50,6 +50,22 @@ export interface Appointment {
   uuid: string;
 }
 
+export interface MappedAppointment {
+  id: string;
+  name: { content: JSX.Element } | string;
+  age: string;
+  gender: string;
+  phoneNumber: string;
+  dob: string;
+  patientUuid: string;
+  dateTime: { content: JSX.Element } | string;
+  serviceType: { content: JSX.Element } | string;
+  visitType: string;
+  provider: string;
+  location: string;
+  comments: string;
+}
+
 export interface AppointmentService {
   appointmentServiceId: number;
   creatorName: string;

@@ -22,12 +22,19 @@ import {
   Tile,
 } from 'carbon-components-react';
 import Add16 from '@carbon/icons-react/es/add/16';
-import CurrencyPound16 from '@carbon/icons-react/es/currency--pound/16';
 import Omega16 from '@carbon/icons-react/es/omega/16';
+import Cough16 from '@carbon/icons-react/es/cough/16';
+import Medication16 from '@carbon/icons-react/es/medication/16';
 import { useLayoutType, ConfigurableLink, formatDatetime, parseDate } from '@openmrs/esm-framework';
-import { useAppointments } from './appointments-table.resource';
 import PatientSearch from '../patient-search/patient-search.component';
-import styles from './appointments-table.scss';
+import styles from './appointments-base-table.scss';
+import { MappedAppointment } from '../types';
+
+interface AppointmentsProps {
+  appointments: Array<MappedAppointment>;
+  isLoading: Boolean;
+  tableHeading: String;
+}
 
 function ActionsMenu() {
   const { t } = useTranslation();
@@ -36,23 +43,15 @@ function ActionsMenu() {
     <OverflowMenu light selectorPrimaryFocus={'#editPatientDetails'} size="sm" flipped>
       <OverflowMenuItem
         className={styles.menuItem}
-        id="#editPatientDetails"
-        itemText={t('editPatientDetails', 'Edit patient details')}>
-        {t('editPatientDetails', 'Edit patient details')}
+        id="#editAppointment"
+        itemText={t('editAppointment', 'Edit Appointment')}>
+        {t('editAppointment', 'EditAppointment')}
       </OverflowMenuItem>
       <OverflowMenuItem
         className={styles.menuItem}
-        id="#setWaitTimeManually"
-        itemText={t('setWaitTimeManually', 'Set wait time manually')}>
-        {t('setWaitTimeManually', 'Set wait time manually')}
-      </OverflowMenuItem>
-      <OverflowMenuItem
-        className={styles.menuItem}
-        id="#endVisit"
-        hasDivider
-        isDelete
-        itemText={t('endVisit', 'End visit')}>
-        {t('endVisit', 'End Visit')}
+        id="#cancelAppointment"
+        itemText={t('cancelAppointment', 'Cancel Appointment')}>
+        {t('cancelAppointment', 'Cancel Appointment')}
       </OverflowMenuItem>
     </OverflowMenu>
   );
@@ -61,17 +60,18 @@ function ActionsMenu() {
 function ServiceIcon({ service }) {
   switch (service) {
     case 'TB Clinic':
-      return <CurrencyPound16 />;
+      return <Cough16 />;
     case 'HIV Clinic':
       return <Omega16 />;
+    case 'Drug Dispense':
+      return <Medication16 />;
     default:
       return null;
   }
 }
 
-function AppointmentsTable() {
+const AppointmentsBaseTable: React.FC<AppointmentsProps> = ({ appointments, isLoading, tableHeading }) => {
   const { t } = useTranslation();
-  const { appointments, isLoading } = useAppointments();
   const [showOverlay, setShowOverlay] = useState(false);
   const isDesktop = useLayoutType() === 'desktop';
 
@@ -102,6 +102,11 @@ function AppointmentsTable() {
         header: t('location', 'Location'),
         key: 'location',
       },
+      {
+        id: 5,
+        header: '',
+        key: 'startButton',
+      },
     ],
     [t],
   );
@@ -117,11 +122,7 @@ function AppointmentsTable() {
         ),
       },
       dateTime: {
-        content: (
-          <span className={styles.statusContainer}>
-            {formatDatetime(parseDate(appointment.dateTime), { mode: 'standard' })}
-          </span>
-        ),
+        content: <span className={styles.statusContainer}>{appointment.dateTime}</span>,
       },
       serviceType: {
         content: (
@@ -130,6 +131,9 @@ function AppointmentsTable() {
             {appointment.serviceType}
           </span>
         ),
+      },
+      startButton: {
+        content: <Button kind="ghost">Start</Button>,
       },
     }));
   }, [appointments]);
@@ -142,7 +146,7 @@ function AppointmentsTable() {
     return (
       <div className={styles.container} data-floating-menu-container>
         <div className={styles.headerContainer}>
-          <span className={styles.heading}>{t('appointments', 'Appointments')}</span>
+          <span className={styles.heading}>{tableHeading}</span>
           <Button
             size="small"
             kind="secondary"
@@ -241,6 +245,6 @@ function AppointmentsTable() {
       {showOverlay && <PatientSearch closePanel={() => setShowOverlay(false)} />}
     </div>
   );
-}
+};
 
-export default AppointmentsTable;
+export default AppointmentsBaseTable;
