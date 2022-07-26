@@ -1,15 +1,11 @@
-<<<<<<< HEAD
 import { OpenmrsResource } from '@openmrs/esm-framework';
 
-=======
->>>>>>> 7f79693 (Mombasa hackathon appointments esm setup (#163))
 export enum SearchTypes {
   BASIC = 'basic',
   ADVANCED = 'advanced',
   SEARCH_RESULTS = 'search_results',
   SCHEDULED_VISITS = 'scheduled-visits',
 }
-<<<<<<< HEAD
 
 interface ObsData {
   concept: {
@@ -22,6 +18,16 @@ interface ObsData {
     value?: string | any;
   }>;
   obsDatetime: string;
+}
+
+interface Encounter {
+  diagnoses: Array<any>;
+  encounterDatetime: string;
+  encounterProviders?: Array<{ provider: { person: { display: string } } }>;
+  encounterType: { display: string; uuid: string };
+  obs: Array<ObsData>;
+  uuid: string;
+  voided: boolean;
 }
 
 export interface AppointmentsFetchResponse {
@@ -66,36 +72,7 @@ export interface ServiceTypes {
   uuid: string;
 }
 
-export interface DashboardConfig {
-  name: string;
-  slot: string;
-  title: string;
+interface MappedEncounter extends Omit<Encounter, 'encounterType' | 'provider'> {
+  encounterType: string;
+  provider: string;
 }
-
-export interface Observation {
-  uuid: string;
-  concept: {
-    uuid: string;
-    display: string;
-    conceptClass: {
-      uuid: string;
-      display: string;
-    };
-  };
-  display: string;
-  groupMembers: null | Array<{
-    uuid: string;
-    concept: {
-      uuid: string;
-      display: string;
-    };
-    value: {
-      uuid: string;
-      display: string;
-    };
-  }>;
-  value: any;
-  obsDatetime: string;
-}
-=======
->>>>>>> 7f79693 (Mombasa hackathon appointments esm setup (#163))
