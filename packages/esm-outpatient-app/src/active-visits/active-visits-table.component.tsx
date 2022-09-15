@@ -55,6 +55,7 @@ import PatientSearch from '../patient-search/patient-search.component';
 import PastVisit from '../past-visit/past-visit.component';
 import styles from './active-visits-table.scss';
 import first from 'lodash-es/first';
+import { SearchTypes } from '../types';
 
 type FilterProps = {
   rowIds: Array<string>;
@@ -165,6 +166,7 @@ function ActiveVisitsTable() {
   const [filteredRows, setFilteredRows] = useState<Array<MappedVisitQueueEntry>>([]);
   const [filter, setFilter] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
+  const [view, setView] = useState('');
   const layout = useLayoutType();
 
   const currentPathName: string = window.location.pathname;
@@ -338,6 +340,17 @@ function ActiveVisitsTable() {
             size="sm"
             kind="secondary"
             renderIcon={(props) => <Add size={16} {...props} />}
+            onClick={() => {
+              setShowOverlay(true);
+              setView(SearchTypes.QUEUE_SERVICE_FORM);
+            }}
+            iconDescription={t('addNewService', 'Add new service')}>
+            {t('addNewService', 'Add new service')}
+          </Button>
+          <Button
+            size="sm"
+            kind="secondary"
+            renderIcon={(props) => <Add size={16} {...props} />}
             onClick={() => setShowOverlay(true)}
             iconDescription={t('addPatientList', 'Add patient to list')}>
             {t('addPatientList', 'Add patient to list')}
@@ -455,7 +468,7 @@ function ActiveVisitsTable() {
             </TableContainer>
           )}
         </DataTable>
-        {showOverlay && <PatientSearch closePanel={() => setShowOverlay(false)} />}
+        {showOverlay && <PatientSearch view={view} closePanel={() => setShowOverlay(false)} />}
       </div>
     );
   }
@@ -485,7 +498,7 @@ function ActiveVisitsTable() {
           </Button>
         </Tile>
       </div>
-      {showOverlay && <PatientSearch closePanel={() => setShowOverlay(false)} />}
+      {showOverlay && <PatientSearch view={view} closePanel={() => setShowOverlay(false)} />}
     </div>
   );
 }

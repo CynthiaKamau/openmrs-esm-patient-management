@@ -1,0 +1,42 @@
+@use '@carbon/styles/scss/spacing';
+@use '@carbon/styles/scss/type';
+@import '~@openmrs/esm-styleguide/src/vars';
+
+.heading {
+  @include type.type-style('productive-heading-01');
+  margin: 1rem 0 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - 6rem);
+}
+
+.grid {
+  margin: 0 1rem;
+  padding: 0rem;
+}
+
+.input {
+  margin-top: 0.8rem;
+}
+
+.button {
+  height: 4rem;
+  display: flex;
+  align-content: flex-start;
+  align-items: baseline;
+  min-width: 50%;
+}
+
+.tablet {
+  padding: 1.5rem 1rem;
+  background-color: $ui-02;
+}
+
+.desktop {
+  padding: 0rem;
+  margin-top: spacing.$spacing-05;
+}
