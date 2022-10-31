@@ -63,6 +63,32 @@ export const configSchema = {
       'The Uuids of person attribute-type that captures contact information `e.g Next of kin contact details`',
     _default: [],
   },
+  vitalsForm: {
+    useFormEngine: {
+      _type: Type.Boolean,
+      _default: false,
+      _description:
+        'Whether to use an Ampath form as the vitals and biometrics form. If set to true, encounterUuid and formUuid must be set as well.',
+    },
+    encounterTypeUuid: {
+      _type: Type.UUID,
+      _default: '67a71486-1a54-468f-ac3e-7091a9a79584',
+    },
+    formUuid: {
+      _type: Type.UUID,
+      _default: 'b08471f6-0892-4bf7-ab2b-bf79797b8ea4',
+    },
+    formName: {
+      _type: Type.String,
+      _default: 'Vitals',
+    },
+    vitalsFormWorkspace: {
+      _type: Type.String,
+      _description: 'The workspace of your vitals form ie either a custom form or default vitals form`',
+      //_default: 'patient-vitals-biometrics-form-workspace',
+      _default: 'patient-form-entry-workspace',
+    },
+  },
   vitals: vitalsConfigSchema,
   biometrics: biometricsConfigSchema,
 };
@@ -83,6 +109,14 @@ export interface ConfigObject {
     midUpperArmCircumferenceUuid: string;
   };
   contactAttributeType: Array<string>;
+  vitalsForm: {
+    useFormEngine: boolean;
+    encounterTypeUuid: string;
+    formUuid: string;
+    formName: string;
+    vitalsFormWorkspace: string;
+  };
+  useFormEngine: boolean;
   vitals: VitalsConfigObject;
   biometrics: BiometricsConfigObject;
 }
