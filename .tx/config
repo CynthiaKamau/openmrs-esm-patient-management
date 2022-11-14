@@ -2,9 +2,9 @@
 host = https://www.transifex.com
 
 
-[openmrs-esm-patient-management.esm-outpatient-app]
-file_filter = packages/esm-outpatient-app/translations/<lang>.json
-source_file = packages/esm-outpatient-app/translations/en.json
+[openmrs-esm-patient-management.esm-service-queue-app]
+file_filter = packages/esm-service-queue-app/translations/<lang>.json
+source_file = packages/esm-service-queue-app/translations/en.json
 source_lang = en
 type = KEYVALUEJSON
 

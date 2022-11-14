@@ -1,6 +1,6 @@
 import { createGlobalStore, createUseStore } from '@openmrs/esm-framework';
 
-const navGroupStore = createGlobalStore('outpatient-nav-groups', { navGroups: [] });
+const navGroupStore = createGlobalStore('service-queue-nav-groups', { navGroups: [] });
 
 export function registerNavGroup(slotName: string) {
   const store = navGroupStore.getState();

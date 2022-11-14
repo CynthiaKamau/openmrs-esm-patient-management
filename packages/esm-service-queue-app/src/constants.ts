@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 export const spaRoot = window['getOpenmrsSpaBase'];
-export const basePath = '/outpatient';
+export const basePath = '/service-queue';
 export const spaBasePath = `${window.spaBase}${basePath}`;
 export const omrsDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZZ';
 export const startOfDay = dayjs(new Date().setUTCHours(0, 0, 0, 0)).format(omrsDateFormat);

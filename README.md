@@ -8,7 +8,7 @@ This repository contains frontend modules for the OpenMRS SPA. These modules rel
 
 - [Active visits app](packages/esm-active-visits-app/)
 - [Appointments app](packages/esm-appointments-app/)
-- [Outpatient app](packages/esm-outpatient-app/README.md)
+- [Service queue app](packages/esm-service-queue-app/README.md)
 - [Patient search](packages/esm-patient-search-app)
 - [Patient registration](packages/esm-patient-registration-app)
 - [Patient list](packages/esm-patient-list-app)
@@ -21,7 +21,7 @@ This monorepo uses [yarn](https://yarnpkg.com) and [lerna](https://github.com/le
 
 To install the dependancies, run:
 ```bash
-npx lerna bootstrap
+yarn
 ```
 
 To start a dev server running all the modules simultaneously, run:

@@ -16,8 +16,8 @@ const swrConfiguration = {
 
 const Root: React.FC = () => {
   useEffect(() => {
-    setLeftNav({ name: 'outpatient-dashboard-slot', basePath: spaBasePath });
-    return () => unsetLeftNav('outpatient-dashboard-slot');
+    setLeftNav({ name: 'service-queue-dashboard-slot', basePath: spaBasePath });
+    return () => unsetLeftNav('service-queue-dashboard-slot');
   }, []);
 
   return (

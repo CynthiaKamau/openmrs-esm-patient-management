@@ -19,7 +19,7 @@ export const OutpatientDashboard = () => {
   const { navGroups } = useNavGroups();
 
   const ungroupedDashboards =
-    extensionStore.slots['outpatient-dashboard-slot']?.assignedExtensions
+    extensionStore.slots['service-queue-dashboard-slot']?.assignedExtensions
       .map((e) => e.meta)
       .filter((e) => Object.keys(e).length) || [];
   const groupedDashboards = navGroups
@@ -37,14 +37,14 @@ export const OutpatientDashboard = () => {
 
   useEffect(() => {
     if (!isDesktop(layout)) {
-      attach('global-nav-menu-slot', 'outpatient-side-nav-ext');
+      attach('global-nav-menu-slot', 'service-queue-side-nav-ext');
     }
-    return () => detach('global-nav-menu-slot', 'outpatient-side-nav-ext');
+    return () => detach('global-nav-menu-slot', 'service-queue-side-nav-ext');
   }, [layout]);
 
   return (
     <div className={styles.dashboardContainer}>
-      {isDesktop(layout) && <ExtensionSlot extensionSlotName="outpatient-sidebar-slot" key={layout} />}
+      {isDesktop(layout) && <ExtensionSlot extensionSlotName="service-queue-sidebar-slot" key={layout} />}
       {currentDashboard && (
         <div className={`cds--grid ${styles.dashboardContent}`}>
           <PatientQueueHeader title={currentDashboard.title} />

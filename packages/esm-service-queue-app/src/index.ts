@@ -14,10 +14,10 @@ const backendDependencies = {
 };
 
 function setupOpenMRS() {
-  const moduleName = '@openmrs/esm-outpatient-app';
+  const moduleName = '@openmrs/esm-service-queue-app';
 
   const options = {
-    featureName: 'outpatient',
+    featureName: 'service-queue',
     moduleName,
   };
 
@@ -39,7 +39,7 @@ function setupOpenMRS() {
   return {
     pages: [
       {
-        route: 'outpatient',
+        route: 'service-queue',
         load: getAsyncLifecycle(() => import('./root.component'), options),
         online: true,
         offline: true,
@@ -71,22 +71,22 @@ function setupOpenMRS() {
     ],
     extensions: [
       {
-        id: 'outpatient-link',
+        id: 'service-queue-link',
         slot: 'app-menu-slot',
         load: getAsyncLifecycle(() => import('./outpatient-link'), options),
         online: true,
         offline: false,
       },
       {
-        id: 'outpatient-side-nav-ext',
-        slot: 'outpatient-sidebar-slot',
+        id: 'service-queue-side-nav-ext',
+        slot: 'service-queue-sidebar-slot',
         load: getAsyncLifecycle(() => import('./side-menu/side-menu.component'), options),
         online: true,
         offline: true,
       },
       {
         id: 'home-db-link',
-        slot: 'outpatient-dashboard-slot',
+        slot: 'service-queue-dashboard-slot',
         load: getSyncLifecycle(createDashboardLink(homeDashboardMeta), options),
         meta: homeDashboardMeta,
         online: true,
