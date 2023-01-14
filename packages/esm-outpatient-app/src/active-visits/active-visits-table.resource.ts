@@ -162,7 +162,7 @@ export function usePriority() {
   };
 }
 
-export function useVisitQueueEntries(currServiceName: string): UseVisitQueueEntries {
+export function useVisitQueueEntries(currServiceName: string, currLocationUuid: string): UseVisitQueueEntries {
   const apiUrl = `/ws/rest/v1/visit-queue-entry?v=full`;
   const { t } = useTranslation();
   const { data, error, isValidating } = useSWR<{ data: { results: Array<VisitQueueEntry> } }, Error>(
@@ -217,10 +217,18 @@ export function useVisitQueueEntries(currServiceName: string): UseVisitQueueEntr
 
   if (!currServiceName || currServiceName == t('all', 'All')) {
     mappedVisitQueueEntries = data?.data?.results?.map(mapVisitQueueEntryProperties);
-  } else {
+  } else if (currServiceName) {
     mappedVisitQueueEntries = data?.data?.results
       ?.map(mapVisitQueueEntryProperties)
       .filter((data) => data.service === currServiceName);
+  } else if (currLocationUuid) {
+    mappedVisitQueueEntries = data?.data?.results
+      ?.map(mapVisitQueueEntryProperties)
+      .filter((data) => data.visitLocation === currLocationUuid);
+  } else if (currServiceName && currLocationUuid) {
+    mappedVisitQueueEntries = data?.data?.results
+      ?.map(mapVisitQueueEntryProperties)
+      .filter((data) => data.visitLocation === currLocationUuid && data.service === currServiceName);
   }
 
   return {

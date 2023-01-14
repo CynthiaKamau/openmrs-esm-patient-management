@@ -14,6 +14,7 @@ export const getServiceCountByAppointmentType = (
 
 const initialServiceNameState = { serviceName: '' };
 const initialServiceUuidState = { serviceUuid: '' };
+const initialLocationUuidState = { locationUuid: '' };
 
 export function getSelectedServiceName() {
   return getGlobalStore<{ serviceName: string }>('queueSelectedServiceName', initialServiceNameState);
@@ -21,6 +22,10 @@ export function getSelectedServiceName() {
 
 export function getSelectedServiceUuid() {
   return getGlobalStore<{ serviceUuid: string }>('queueSelectedServiceUuid', initialServiceUuidState);
+}
+
+export function getSelectedLocationUuid() {
+  return getGlobalStore<{ locationUuid: string }>('locationSelectedServiceUuid', initialLocationUuidState);
 }
 
 export const updateSelectedServiceName = (currentServiceName: string) => {
@@ -31,6 +36,11 @@ export const updateSelectedServiceName = (currentServiceName: string) => {
 export const updateSelectedServiceUuid = (currentServiceUuid: string) => {
   const store = getSelectedServiceUuid();
   store.setState({ serviceUuid: currentServiceUuid });
+};
+
+export const updateSelectedLocationUuid = (currentLocationUuid: string) => {
+  const store = getSelectedLocationUuid();
+  store.setState({ locationUuid: currentLocationUuid });
 };
 
 export const useSelectedServiceName = () => {
@@ -49,4 +59,13 @@ export const useSelectedServiceUuid = () => {
     getSelectedServiceUuid().subscribe(({ serviceUuid }) => setCurrentServiceUuid(serviceUuid));
   }, []);
   return currentServiceUuid;
+};
+
+export const useSelectedLocatioUuid = () => {
+  const [currentLocationUuid, setCurrentLocationUuid] = useState(initialLocationUuidState.locationUuid);
+
+  useEffect(() => {
+    getSelectedLocationUuid().subscribe(({ locationUuid }) => setCurrentLocationUuid(locationUuid));
+  }, []);
+  return currentLocationUuid;
 };
