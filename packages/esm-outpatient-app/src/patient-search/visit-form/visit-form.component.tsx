@@ -460,27 +460,26 @@ const StartVisitForm: React.FC<VisitFormProps> = ({ patientUuid, toggleSearchTyp
 
           <section className={styles.section}>
             <div className={styles.sectionTitle}>{t('priority', 'Priority')}</div>
-            {!priorities?.length ? (
-              <InlineNotification
-                className={styles.inlineNotification}
-                kind={'error'}
-                lowContrast
-                subtitle={t('configurePriorities', 'Please configure priorities to continue.')}
-                title={t('noPrioritiesConfigured', 'No priorities configured')}
-              />
-            ) : (
-              <ContentSwitcher
-                size="sm"
-                selectionMode="manual"
-                onChange={(event) => {
-                  setPriority(event.name as any);
-                }}>
-                {priorities?.length > 0 &&
-                  priorities.map(({ uuid, display }) => {
-                    return <Switch name={uuid} text={display} value={uuid} index={uuid} />;
-                  })}
-              </ContentSwitcher>
-            )}
+            <ContentSwitcher
+              size="sm"
+              selectionMode="manual"
+              onChange={(event) => {
+                setPriority(event.name as any);
+              }}>
+              {priorities?.length > 0 ? (
+                priorities.map(({ uuid, display }) => {
+                  return <Switch name={uuid} text={display} value={uuid} index={uuid} />;
+                })
+              ) : (
+                <InlineNotification
+                  className={styles.inlineNotification}
+                  kind={'error'}
+                  lowContrast
+                  subtitle={t('configurePriorities', 'Please configure priorities to continue.')}
+                  title={t('noPrioritiesConfigured', 'No priorities configured')}
+                />
+              )}
+            </ContentSwitcher>
           </section>
         </Stack>
       </div>
