@@ -1,16 +1,43 @@
 import useSWR from 'swr';
 import { openmrsFetch } from '@openmrs/esm-framework';
-import { Appointment, AppointmentsFetchResponse } from '../types/index';
+import { Appointment, AppointmentsFetchResponse, MappedAppointment } from '../types/index';
 import { Provider } from '../types';
 import { startOfDay } from '../constants';
 import dayjs from 'dayjs';
 
 export function useAppointments() {
   const apiUrl = `/ws/rest/v1/appointment/all?forDate=${startOfDay}`;
+  const url = `/ws/rest/v1/appointment/unScheduledAppointment?forDate=${startOfDay}`;
+
   const { data, error, isLoading, isValidating } = useSWR<{ data: Array<Appointment> }, Error>(apiUrl, openmrsFetch);
+  const { data: unScheduledAppointments, isLoading: unScheduledAppointmentsLoading } = useSWR<{ data: Array<any> }>(
+    url,
+    openmrsFetch,
+  );
+
+  const mappedAppointmentProperties = (appointment: Appointment): MappedAppointment => ({
+    uuid: appointment.uuid,
+    patientUuid: appointment.patient.uuid,
+    name: appointment.patient.name,
+    returnDate: appointment.startDateTime,
+    gender: appointment.patient?.gender,
+    age: appointment.patient.age,
+    visitType: appointment.appointmentKind,
+    status: appointment.status,
+    phoneNumber: appointment.patient?.phoneNumber,
+  });
+
+  const scheduledAppointments = data?.data?.map(mappedAppointmentProperties);
+  const mappedUnscheduledAppointments = unScheduledAppointments?.data?.map((appointment) => ({
+    ...appointment,
+    status: 'Unscheduled',
+    visitType: 'Unscheduled',
+  }));
+
+  const allAppointments = scheduledAppointments.concat(mappedUnscheduledAppointments);
 
   return {
-    appointmentQueueEntries: data ? data?.data : [],
+    appointmentQueueEntries: allAppointments ? allAppointments : [],
     isLoading,
     isError: error,
     isValidating,

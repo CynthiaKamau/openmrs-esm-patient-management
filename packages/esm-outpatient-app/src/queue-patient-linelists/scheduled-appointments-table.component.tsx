@@ -136,19 +136,19 @@ const AppointmentsTable: React.FC = () => {
       id: appointment.uuid,
       name: {
         content: (
-          <ConfigurableLink to={`\${openmrsSpaBase}/patient/${appointment.patient.uuid}/chart`}>
-            {appointment.patient.name}
+          <ConfigurableLink to={`\${openmrsSpaBase}/patient/${appointment.patientUuid}/chart`}>
+            {appointment.name}
           </ConfigurableLink>
         ),
       },
-      returnDate: formatDate(new Date(appointment.startDateTime), {
+      returnDate: formatDate(new Date(appointment.returnDate), {
         mode: 'wide',
       }),
-      gender: getGender(appointment.patient?.gender, t),
-      age: appointment.patient.age,
-      visitType: appointment.appointmentKind,
+      gender: getGender(appointment?.gender, t),
+      age: appointment?.age,
+      visitType: appointment?.visitType,
       status: appointment.status,
-      phoneNumber: appointment.patient?.phoneNumber,
+      phoneNumber: appointment?.phoneNumber,
     }));
   }, [results, t]);
 

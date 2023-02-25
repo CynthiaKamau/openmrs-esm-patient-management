@@ -414,3 +414,15 @@ export interface QueueRoom {
   name: string;
   description: string;
 }
+
+export interface MappedAppointment {
+  patientUuid: string;
+  name: string;
+  returnDate: string;
+  gender: string;
+  age: string;
+  visitType: string;
+  status: string;
+  phoneNumber: string;
+  uuid: string;
+}

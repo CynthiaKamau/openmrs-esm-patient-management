@@ -103,7 +103,7 @@ export const configSchema = {
   appointmentStatuses: {
     _type: Type.Array,
     _description: 'Configurable appointment status (status of appointments)',
-    _default: ['Requested', 'Scheduled', 'CheckedIn', 'Completed', 'Cancelled', 'Missed'],
+    _default: ['Requested', 'Scheduled', 'Unscheduled', 'CheckedIn', 'Completed', 'Cancelled', 'Missed'],
   },
   defaultIdentifierTypes: {
     _type: Type.Array,

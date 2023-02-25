@@ -49,12 +49,18 @@ export function useServiceMetricsCount(service: string, location: string) {
 
 export const useAppointmentMetrics = () => {
   const apiUrl = `/ws/rest/v1/appointment/all?forDate=${startOfDay}`;
+  const url = `/ws/rest/v1/appointment/unScheduledAppointment?forDate=${startOfDay}`;
 
   const { data, error, isLoading } = useSWR<{
     data: Array<Appointment>;
   }>(apiUrl, openmrsFetch);
 
-  const totalScheduledAppointments = data?.data.length ?? 0;
+  const { data: unScheduledAppointments, isLoading: unScheduledAppointmentsLoading } = useSWR<{
+    data: Array<Appointment>;
+  }>(url, openmrsFetch);
+
+  const totalScheduledAppointments =
+    !isLoading && !unScheduledAppointmentsLoading ? data?.data?.concat(unScheduledAppointments?.data)?.length : 0;
 
   return {
     isLoading,
