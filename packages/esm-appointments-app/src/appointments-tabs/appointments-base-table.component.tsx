@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../empty-state/empty-state.component';
 import { closeOverlay, launchOverlay } from '../hooks/useOverlay';
@@ -49,6 +49,12 @@ interface AppointmentsBaseTableProps {
   visits?: Array<any>;
 }
 
+interface PaginationData {
+  goTo: (page: number) => void;
+  results: Array<MappedAppointment>;
+  currentPage: number;
+}
+
 const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
   appointments,
   isLoading,
@@ -58,7 +64,9 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const [pageSize, setPageSize] = useState(10);
-  const { results, goTo, currentPage } = usePagination(appointments, pageSize);
+  const [searchString, setSearchString] = useState('');
+
+  const handleSearch = useCallback((e) => setSearchString(e.target.value), []);
 
   const launchCreateAppointmentForm = (patientUuid) => {
     closeOverlay();
@@ -71,18 +79,22 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
   const { isLoading: isLoadingQueueEntries, queueEntries } = useServiceQueues();
   const headerData = [
     {
+      id: 0,
       header: t('patientName', 'Patient name'),
       key: 'patientName',
     },
     {
+      id: 1,
       header: t('dateTime', 'Date & Time'),
       key: 'dateTime',
     },
     {
+      id: 2,
       header: t('serviceType', 'Service Type'),
       key: 'serviceType',
     },
     {
+      id: 3,
       header: t('actions', 'Actions'),
       key: 'actions',
     },
@@ -92,8 +104,9 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
     return ` ${queryEntries?.queueEntry?.status?.display ?? ''} ${queryEntries?.queueEntry?.queue?.display ?? ''}`;
   };
   const hasVisit = (patientUuid) => visits?.find((visit) => visit?.patient?.uuid === patientUuid)?.startDatetime;
-  const rowData = results?.map((appointment, index) => ({
+  const rowData = appointments?.map((appointment, index) => ({
     id: `${index}`,
+    patientUuid: appointment.patientUuid,
     patientName: {
       content: (
         <ConfigurableLink
@@ -136,6 +149,30 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
     ),
   }));
 
+  const searchResults = useMemo(() => {
+    if (searchString && searchString.trim() !== '') {
+      const search = searchString.toLowerCase();
+      return rowData.filter((activeRow) =>
+        Object.keys(activeRow).some((header) => {
+          if (header === 'patientUuid') {
+            return false;
+          }
+          return `${activeRow[header]}`.toLowerCase().includes(search);
+        }),
+      );
+    } else {
+      return rowData;
+    }
+  }, [searchString, rowData]);
+
+  const { goTo, results, currentPage } = usePagination(searchResults, pageSize);
+
+  useEffect(() => {
+    if (currentPage !== 1) {
+      goTo(1);
+    }
+  }, [searchString]);
+
   const pageSizes = useMemo(() => {
     const numberOfPages = Math.ceil(appointments.length / 10);
     return [...Array(numberOfPages).keys()].map((x) => {
@@ -174,8 +211,8 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
           }}
         />
       </div>
-      <DataTable rows={rowData} headers={headerData} isSortable filterRows={handleFilter}>
-        {({ rows, headers, getHeaderProps, getRowProps, getTableProps, onInputChange }) => (
+      <DataTable rows={results} headers={headerData} isSortable filterRows={handleFilter}>
+        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
           <TableContainer
             title={`${startCase(tableHeading)} ${t('appointments', 'appointment')} ${appointments.length ?? 0}`}>
             <TableToolbar>
@@ -184,7 +221,7 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
                   size="sm"
                   style={{ backgroundColor: '#f4f4f4' }}
                   tabIndex={0}
-                  onChange={onInputChange}
+                  onChange={handleSearch}
                 />
                 <Button size="lg" kind="ghost" renderIcon={Download}>
                   {t('download', 'Download')}
@@ -210,7 +247,7 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
                     </TableExpandRow>
                     {row.isExpanded && (
                       <TableExpandedRow colSpan={headers.length + 1}>
-                        <AppointmentDetails appointment={results[index]} />
+                        {/* <AppointmentDetails appointment={results[index]} /> */}
                       </TableExpandedRow>
                     )}
                   </React.Fragment>
@@ -225,14 +262,20 @@ const AppointmentsBaseTable: React.FC<AppointmentsBaseTableProps> = ({
         forwardText="Next page"
         itemsPerPageText="Items per page:"
         page={currentPage}
-        pageNumberText="Page Number"
         pageSize={10}
-        onChange={({ page, pageSize }) => {
-          goTo(page);
-          setPageSize(pageSize);
-        }}
         pageSizes={pageSizes}
-        totalItems={appointments.length ?? 0}
+        totalItems={searchResults.length}
+        pageNumberText="Page Number"
+        onChange={({ page, pageSize }) => {
+          // goTo(page);
+          // setPageSize(pageSize);
+          if (pageSize !== currentPage) {
+            setPageSize(pageSize);
+          }
+          if (page !== currentPage) {
+            goTo(page);
+          }
+        }}
       />
     </div>
   );
