@@ -102,7 +102,7 @@ const ChangeStatus: React.FC<ChangeStatusDialogProps> = ({ queueEntry, closeModa
   );
 
   if (Object.keys(queueEntry)?.length === 0) {
-    return <ModalHeader closeModal={closeModal} title={t('patientNotInQueue', 'The patient is not in the queue')} />;
+    return <ModalHeader closeModal={closeModal} tgitle={t('patientNotInQueue', 'The patient is not in the queue')} />;
   }
 
   if (Object.keys(queueEntry)?.length > 0) {
@@ -130,6 +130,7 @@ const ChangeStatus: React.FC<ChangeStatusDialogProps> = ({ queueEntry, closeModa
                   setSelectedQueueLocation(event.target.value);
                   setEditLocation(true);
                 }}>
+                {!selectedQueueLocation ? <SelectItem text={t('selectOption', 'Select an option')} value="" /> : null}
                 {queueLocations?.length > 0 &&
                   queueLocations.map((location) => (
                     <SelectItem key={location.id} text={location.name} value={location.id}>
